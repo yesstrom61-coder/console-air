@@ -10,22 +10,10 @@ Self-hostable, self-custody crypto wallet UI for deploying on the [Akash Network
 ## Setup
 
 ```bash
-git clone git@github.com:baktun14/console-air.git
+git clone git@github.com:akash-network/console-air.git
 cd console-air
 npm install
 ```
-
-## Environment
-
-Console Air ships with production defaults pointing at the Akash hosted Console infrastructure (`console-api.akash.network`, `stats.akash.network`, the public chain REST endpoints, etc.) — **no env config is required to run the app**.
-
-If you want to point an instance at your own Console API, provider proxy, or chain nodes, env files live under [apps/deploy-web/env/](apps/deploy-web/env/) and are gitignored:
-
-```bash
-cp apps/deploy-web/env/.env.sample apps/deploy-web/env/.env.local
-```
-
-Every variable in the sample is optional and documents its production default; uncomment only the ones you need to override.
 
 ## Run
 
@@ -37,12 +25,24 @@ npm run dev
 
 The app will be available at [http://localhost:3000](http://localhost:3000) (or `3001` if `3000` is in use).
 
+That's it — Console Air ships with production defaults pointing at the Akash hosted Console infrastructure (`console-api.akash.network`, `stats.akash.network`, the public chain REST endpoints, etc.), so **no env config is required to run the app**.
+
 ## Build & Production
 
 ```bash
 npm run build
 npm --workspace apps/deploy-web run start
 ```
+
+## Environment overrides (optional)
+
+If you want to point an instance at your own Console API, provider proxy, or chain nodes, env files live under [apps/deploy-web/env/](apps/deploy-web/env/) and are gitignored:
+
+```bash
+cp apps/deploy-web/env/.env.sample apps/deploy-web/env/.env.local
+```
+
+Every variable in the sample is optional and documents its production default; uncomment only the ones you need to override.
 
 ## Project Layout
 
