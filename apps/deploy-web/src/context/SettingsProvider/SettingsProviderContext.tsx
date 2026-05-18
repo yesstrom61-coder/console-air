@@ -114,8 +114,8 @@ export const SettingsProvider: FCWithChildren = ({ children }) => {
         const customNodeUrl = new URL(settings.apiEndpoint);
 
         const customNode: BlockchainNode = {
-          api: "",
-          rpc: "",
+          api: settings.apiEndpoint,
+          rpc: settings.rpcEndpoint,
           status: nodeStatus.status,
           latency: nodeStatus.latency,
           nodeInfo: nodeStatus.nodeInfo,
@@ -125,17 +125,15 @@ export const SettingsProvider: FCWithChildren = ({ children }) => {
 
         updateSettings({
           ...settings,
-          apiEndpoint: defaultApiNode,
-          rpcEndpoint: defaultRpcNode,
-          selectedNode: selectedNode as BlockchainNode,
+          apiEndpoint: settings.apiEndpoint,
+          rpcEndpoint: settings.rpcEndpoint,
+          selectedNode: customNode,
           customNode,
           nodes: nodesWithStatuses,
           isBlockchainDown: nodeStatus.status === "inactive"
         });
-      }
-
-      // If the user has no settings or the selected node is inactive, use the fastest available active node
-      if (!selectedNodeInSettings || (selectedNodeInSettings && settings.selectedNode?.status === "inactive")) {
+      } else if (!selectedNodeInSettings || (selectedNodeInSettings && settings.selectedNode?.status === "inactive")) {
+        // If the user has no settings or the selected node is inactive, use the fastest available active node
         const randomNode = getFastestNode(nodesWithStatuses);
         // Use rpc proxy as a backup if there's no active nodes in the list
         defaultApiNode = randomNode?.api || netConfig.getBaseAPIUrl(selectedNetwork.id);
@@ -299,7 +297,21 @@ export const SettingsProvider: FCWithChildren = ({ children }) => {
 
       // Update the settings with callback to avoid stale state settings
       updateSettings(prevSettings => {
-        const selectedNode = prevSettings.selectedNode ? _nodes.find(node => node.id === prevSettings.selectedNode?.id) : undefined;
+        let selectedNode = prevSettings.selectedNode ? _nodes.find(node => node.id === prevSettings.selectedNode?.id) : undefined;
+        let apiEndpoint = prevSettings.apiEndpoint;
+        let rpcEndpoint = prevSettings.rpcEndpoint;
+
+        // When switching out of custom mode, the previous selectedNode is the custom node
+        // (not in the public list), so the lookup above misses. Pick the fastest active
+        // public node instead so the dropdown isn't left empty.
+        if (!_isCustomNode && !selectedNode) {
+          selectedNode = getFastestNode(_nodes);
+          if (selectedNode) {
+            apiEndpoint = selectedNode.api;
+            rpcEndpoint = selectedNode.rpc;
+          }
+        }
+
         let isBlockchainDown: boolean;
         if (_isCustomNode) {
           isBlockchainDown = _customNode?.status === "inactive";
@@ -309,6 +321,8 @@ export const SettingsProvider: FCWithChildren = ({ children }) => {
 
         return {
           ...prevSettings,
+          apiEndpoint,
+          rpcEndpoint,
           nodes: _nodes,
           selectedNode,
           customNode: _customNode,
