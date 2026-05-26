@@ -45,7 +45,7 @@
     "@emotion/server": "11.4.0",
     "@emotion/styled": "11.8.1",
     "@hookform/resolvers": "3.9.0",
-    "@interchain-ui/react": "1.23.31",
+    "@interchain-ui/react": "1.12.3",
     "@monaco-editor/react": "4.6.0",
     "@mui/icons-material": "5.18.0",
     "@mui/material": "5.18.0",
