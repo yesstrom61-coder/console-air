@@ -1,6 +1,5 @@
 "use client";
 import "@interchain-ui/react/styles";
-import "@interchain-ui/react/globalStyles";
 
 import { useEffect, useRef } from "react";
 import { Snackbar } from "@akashnetwork/ui/components";
